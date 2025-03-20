@@ -45,5 +45,5 @@ Key features include:
 * `infra_simulator.py` - Implements functions used in the simulations proceess and triggers Bash script to automate service setup.  
 
 
-**submitted by**  
+**Submitted By**  
 Avital Chissick
