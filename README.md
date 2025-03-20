@@ -1,6 +1,6 @@
-# DevOps Infrastructure Provisioning & Configuration Automation Project
+## DevOps Infrastructure Provisioning & Configuration Automation Project
 
-The objective is to to build a skeleton of an infrastructure provisioning tool using mockup to simulate automation.
+The objective of the project is to to build a skeleton of an infrastructure provisioning tool using mockup to simulate automation.
 
 The project uses python to allow the user to enter configuration for virtual machines. User input will be validated.
 The project will also use a Bash script to automate service setup.
