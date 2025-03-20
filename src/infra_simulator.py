@@ -6,6 +6,7 @@ Calling a bash script to install a service
 import subprocess
 import json
 from OperatingSystem import OperatingSystemType
+from StorageType import StorageType
 from Machine import Machine
 from logger import logger
 
@@ -13,6 +14,10 @@ CONFIG_FILE = "configs/instances.json"
 
 
 class InvalidName(Exception):
+    """
+    Exception used when the user enters an invalid name.
+    """
+
     pass
 
 
@@ -80,6 +85,24 @@ def get_machine_memory(memory_type: str):
     return None
 
 
+def get_machine_storage_type():
+    """
+    Ask the user which storage type will be installed on the machine
+    """
+    print("Please select the storage type from the following list: ")
+    for storage_type in StorageType:
+        print(f"{storage_type.value}: {storage_type.name}")
+
+    try:
+        user_choice = int(input("Enter your selection:"))
+        return StorageType(user_choice)
+    except ValueError:
+        logger.error(
+            "Invalid selection for storage type. The number must correspond to a storage type"
+        )
+    return None
+
+
 def get_machine_config_from_user():
     """
     Asks the user for machine configuration.
@@ -100,11 +123,15 @@ def get_machine_config_from_user():
     if not ram:
         return None
 
+    storage_type = get_machine_storage_type()
+    if not storage_type:
+        return None
+
     storage = get_machine_memory("Storage")
     if not storage:
         return None
 
-    return Machine(name, os, cpu_cores, ram, storage)
+    return Machine(name, os, cpu_cores, ram, storage_type, storage)
 
 
 def get_user_machines():

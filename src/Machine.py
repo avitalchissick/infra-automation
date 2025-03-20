@@ -1,6 +1,8 @@
 from jsonschema import validate, ValidationError, exceptions
 
 from OperatingSystem import OperatingSystemType
+from StorageType import StorageType
+from logger import logger
 
 
 class Machine:
@@ -13,10 +15,11 @@ class Machine:
         cpu_cores (int): Number of CPU cores allocated to the machine.
         ram_gb (int): Amount of RAM (in GB) allocated to the machine.
         storage_gb (int): Amount of storage (in GB) allocated to the machine.
+        storage_type (StorageType): Type of storage disk.
         is_running (bool): The current state of the virtual machine (running or stopped).
     """
 
-    # Define the JSON schema
+    # Define the JSON schema for validation
     schema = {
         "type": "object",
         "properties": {
@@ -25,8 +28,9 @@ class Machine:
             "cpu_cores": {"type": "integer", "minimum": 1},
             "ram_gb": {"type": "integer", "minimum": 1},
             "storage_gb": {"type": "integer", "minimum": 1},
+            "storage_type": {"type": "string"},
         },
-        "required": ["name", "os", "cpu_cores", "ram_gb", "storage_gb"],
+        "required": ["name", "os", "cpu_cores", "ram_gb", "storage_type", "storage_gb"],
         "additionalProperties": False,  # Prevent extra properties
     }
 
@@ -36,6 +40,7 @@ class Machine:
         os: OperatingSystemType,
         cpu_cores: int,
         ram_gb: int,
+        storage_type: StorageType,
         storage_gb: int,
     ):
         """
@@ -46,12 +51,14 @@ class Machine:
             os (OperatingSystemType): The operating system
             cpu_cores (int): Number of CPU cores to allocate.
             ram_gb (int): Amount of RAM (in GB) to allocate.
+            storage_type (StorageType): Type of storage disk.
             storage_gb (int): Amount of storage (in GB) to allocate.
         """
         self.name = name
         self.os = os
         self.cpu_cores = cpu_cores
         self.ram_gb = ram_gb
+        self.storage_type = storage_type
         self.storage_gb = storage_gb
         self.is_running = False
 
@@ -64,9 +71,9 @@ class Machine:
         """
         if not self.is_running:
             self.is_running = True
-            print(f"Machine '{self.name}' is now running.")
+            logger.info("Machine %s is now running.", self.name)
         else:
-            print(f"Machine '{self.name}' is already running.")
+            logger.info("Machine %s is already running.", self.name)
 
     def stop(self):
         """
@@ -77,9 +84,9 @@ class Machine:
         """
         if self.is_running:
             self.is_running = False
-            print(f"Machine '{self.name}' has been stopped.")
+            logger.info("Machine %s has been stopped.", self.name)
         else:
-            print(f"Machine '{self.name}' is already stopped.")
+            logger.info("Machine %s is already stopped.", self.name)
 
     def restart(self):
         """
@@ -87,7 +94,7 @@ class Machine:
 
         The machine will be stopped and then started again.
         """
-        print(f"Restarting machine '{self.name}'...")
+        logger.info("Restarting machine %s...", self.name)
         self.stop()
         self.start()
 
@@ -98,7 +105,7 @@ class Machine:
         Displays whether the machine is running or stopped.
         """
         running_status = "running" if self.is_running else "stopped"
-        print(f"Machine '{self.name}' is {running_status}.")
+        logger.info("Machine %s is %s.", self.name, running_status)
 
     def allocate_resources(self, cpu_cores=None, ram_gb=None, storage_gb=None):
         """
@@ -118,8 +125,12 @@ class Machine:
         if storage_gb:
             self.storage_gb = storage_gb
 
-        print(
-            f"Machine '{self.name}' resources updated: CPU Cores = {self.cpu_cores}, RAM = {self.ram_gb} GB, Storage = {self.storage_gb} GB."
+        logger.info(
+            "Machine %s resources updated: CPU Cores = %.1f, RAM = %i GB, Storage = %i GB.",
+            self.name,
+            self.cpu_cores,
+            self.ram_gb,
+            self.storage_gb,
         )
 
     def __str__(self):
@@ -133,6 +144,7 @@ class Machine:
             f"os={self.os.name}, "
             f"cpu_cores={self.cpu_cores}, "
             f"ram_gb={self.ram_gb}, "
+            f"storage_type={self.storage_type.name}, "
             f"storage_gb={self.storage_gb}, "
             f"is_running={self.is_running})"
         )
@@ -146,6 +158,7 @@ class Machine:
             "os": self.os.name,
             "cpu_cores": self.cpu_cores,
             "ram_gb": self.ram_gb,
+            "storage_type": self.storage_type.name,
             "storage_gb": self.storage_gb,
         }
 
@@ -158,23 +171,23 @@ class Machine:
             validate(instance=machine.to_dict(), schema=Machine.schema)
             return True
         except ValidationError as e:
-            print("Validation error:", e.message)
+            logger.error("Validation error: %s", e.message)
         except exceptions.SchemaError as e:
-            print("Schema error:", e.message)
+            logger.error("Schema error: %s", e.message)
         return False
 
 
 # Example usage:
 if __name__ == "__main__":
     # Creating a machine with initial resources
-    m1 = Machine("UbuntuVM", OperatingSystemType.LINUX, 4, 16, 100)
+    m1 = Machine("UbuntuVM", OperatingSystemType.LINUX, 4.5, 16, StorageType.SSD, 100)
 
     # Starting the VM and checking its status
     m1.start()
     m1.status()
 
     # Allocating new resources
-    m1.allocate_resources(cpu_cores=8, ram_gb=32)
+    m1.allocate_resources(cpu_cores=8.5, ram_gb=32)
 
     # Restarting the VM and checking its status again
     m1.restart()

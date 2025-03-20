@@ -1,4 +1,4 @@
-DevOps Infrastructure Provisioning & Configuration Automation Project
+# DevOps Infrastructure Provisioning & Configuration Automation Project
 
 The objective is to to build a skeleton of an infrastructure provisioning tool using mockup to simulate automation.
 
@@ -18,7 +18,7 @@ provisioning.log - log of the provisioning process.
 scripts folder - holds Bash scripts.
 setup_service.sh - script for setting up a service.
 
-src folder - holds pythong code files.
+src folder - holds python code files.
 main.py is the main execution file.
 Running it will prompt the user for machines configuration.
 Machines configuration will be saved to configs\instance.json.
