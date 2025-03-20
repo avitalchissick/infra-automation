@@ -22,7 +22,7 @@ Key features include:
 * Bash scripting for automating service setup.  
 * Comprehensive logging and error handeling.  
 
-### Project Structure:
+### Project Structure
 **Configuration Files**
 * `configs/` - Contains configuration files.  
 * `configs/instances.json` - Stores the list of machines configured by the user.  
@@ -44,4 +44,6 @@ Key features include:
 * `StorageType.py` - Enum class listing of available storage disk types for the virtual machines.  
 * `infra_simulator.py` - Implements functions used in the simulations proceess and triggers Bash script to automate service setup.  
 
-**submitted by:** Avital Chissick
+
+**submitted by**  
+Avital Chissick
