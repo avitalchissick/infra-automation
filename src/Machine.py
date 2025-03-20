@@ -25,7 +25,7 @@ class Machine:
         "properties": {
             "name": {"type": "string"},
             "os": {"type": "string"},
-            "cpu_cores": {"type": "integer", "minimum": 1},
+            "cpu_cores": {"type": "number", "minimum": 1, "multipleOf": 0.5},
             "ram_gb": {"type": "integer", "minimum": 1},
             "storage_gb": {"type": "integer", "minimum": 1},
             "storage_type": {"type": "string"},

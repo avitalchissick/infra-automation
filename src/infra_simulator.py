@@ -5,12 +5,13 @@ Calling a bash script to install a service
 
 import subprocess
 import json
+from pathlib import Path
 from OperatingSystem import OperatingSystemType
 from StorageType import StorageType
 from Machine import Machine
 from logger import logger
 
-CONFIG_FILE = "configs/instances.json"
+CONFIG_FILE = Path("configs/instances.json")
 
 
 class InvalidName(Exception):
@@ -28,15 +29,17 @@ def get_machine_name():
     """
     try:
         user_name = input("Enter machine name: ").strip()
-        if len(user_name) == 0:
+        if not user_name:
             raise InvalidName("Name cannot be empty.")
         if not user_name.isalnum():
             raise InvalidName("Name must be alpha-numeric.")
+        return user_name
     except InvalidName as e:
-        logger.error(f"Invalid name: {e}")
-        user_name = None
-
-    return user_name
+        logger.error("Invalid name: %s", e)
+        return None
+    except KeyboardInterrupt:
+        logger.info("User exited input process")
+        return None
 
 
 def get_machine_os():
@@ -51,10 +54,11 @@ def get_machine_os():
         user_choice = int(input("Enter your selection:"))
         return OperatingSystemType(user_choice)
     except ValueError:
-        logger.error(
-            "Invalid selection for operating system. The number must correspond to an operating system"
-        )
-    return None
+        logger.error("Invalid selection. Enter a valid OS number.")
+        return None
+    except KeyboardInterrupt:
+        logger.info("User exited input process")
+        return None
 
 
 def get_cpu_cores():
@@ -62,13 +66,22 @@ def get_cpu_cores():
     Ask the user how many CPU cores the machine will have
     """
     try:
-        user_choice = int(input("Enter the number of CPU cores:"))
-        if user_choice <= 0:
-            raise ValueError
-        return user_choice
+        user_choice = float(
+            input(
+                "Enter the number of CPU cores (must be an integer or multiplication of 0.5):"
+            )
+        )
+        if user_choice % 0.5 == 0 and user_choice > 0:
+            return user_choice
+        raise ValueError
     except ValueError:
-        logger.error("CPU cores must be a integer greater then 0")
-    return None
+        logger.error(
+            "CPU cores must be a numerical value greater then 0 and in multiplication of 0.5"
+        )
+        return None
+    except KeyboardInterrupt:
+        logger.info("User exited input process")
+        return None
 
 
 def get_machine_memory(memory_type: str):
@@ -77,12 +90,15 @@ def get_machine_memory(memory_type: str):
     """
     try:
         user_choice = int(input(f"Enter the amount in GB of {memory_type} memory:"))
-        if user_choice <= 0:
+        if user_choice <= 10:
             raise ValueError
         return user_choice
     except ValueError:
-        logger.error(f"{memory_type} memory must be a integer greater then 0")
-    return None
+        logger.error("%s memory must be a integer greater then 1", memory_type)
+        return None
+    except KeyboardInterrupt:
+        logger.info("User exited input process")
+        return None
 
 
 def get_machine_storage_type():
@@ -97,10 +113,11 @@ def get_machine_storage_type():
         user_choice = int(input("Enter your selection:"))
         return StorageType(user_choice)
     except ValueError:
-        logger.error(
-            "Invalid selection for storage type. The number must correspond to a storage type"
-        )
-    return None
+        logger.error("Invalid selection. Enter a value storage type number.")
+        return None
+    except KeyboardInterrupt:
+        logger.info("User exited input process")
+        return None
 
 
 def get_machine_config_from_user():
@@ -138,31 +155,58 @@ def get_user_machines():
     """
     Gets a list of machines from the user
     """
-    machines = []
+    machines = {}
     while True:
-        yes_no_reply = (
-            input("Would to like to define a virtual machine (yes/no): ")
-            .strip()
-            .lower()
-        )
-        if yes_no_reply != "yes":
-            logger.info("Ending user configuration")
+        try:
+            yes_no_reply = (
+                input("Would to like to define a virtual machine (yes/no): ")
+                .strip()
+                .lower()
+            )
+            if yes_no_reply != "yes":
+                logger.info("Ending user configuration")
+                break
+
+            user_machine = get_machine_config_from_user()
+            if not user_machine:
+                continue  # Skip invalid machine configurations
+
+            if user_machine.name in machines:
+                logger.error("A machine named %s already exists.", user_machine.name)
+                continue
+
+            if Machine.validate(user_machine):
+                logger.info("User added machine configuration: %s", user_machine)
+                machines[user_machine.name] = user_machine
+
+        except KeyboardInterrupt:
+            logger.info("User exited machine configuration.")
             break
+    return machines
 
-        user_machine = get_machine_config_from_user()
-        if user_machine is not None and Machine.validate(user_machine):
-            logger.info(f"User added machine configuration: {user_machine}")
-            machines.append(user_machine)
 
-    data = [m.to_dict() for m in machines]
-    if len(data) > 0:
-        logger.info(f"User configured {len(machines)} machines")
-        with open("configs/instances.json", "w") as f:
-            json.dump(data, f, indent=4)
-    else:
+def save_machines(machines: dict):
+    """
+    Save listed machines to the confiiguration file.
+    """
+    if not machines:
         logger.info("No machines were configured by the user")
 
-    return machines
+    data = [m.to_dict() for m in machines.values()]
+    CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+
+    with CONFIG_FILE.open("w") as f:
+        json.dump(data, f, indent=4)
+
+    logger.info("Save %i machines to %s", len(machines), CONFIG_FILE.name)
+
+
+def create_machines(machines: dict):
+    """
+    Creates listed machines.
+    """
+    for m in machines.values():
+        logger.info("Creating machine: %s", m)
 
 
 def run_setup_service_script(service_name):
@@ -171,8 +215,10 @@ def run_setup_service_script(service_name):
     """
     try:
         subprocess.run(["bash", "scripts/setup_service.sh", service_name], check=True)
-        logger.info(f"{service_name} setup completed.")
+        logger.info("%s setup completed.", service_name)
     except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to install {service_name}: {e}")
+        logger.error("Failed to install %s: %s", service_name, e)
     except subprocess.TimeoutExpired as e:
-        logger.error(f"Timeout while attempting to install {service_name}: {e}")
+        logger.error("Timeout while attempting to install %s: %s", service_name, e)
+    except FileNotFoundError:
+        logger.error("Setup script not found: scripts/setup_service.sh")
