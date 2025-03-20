@@ -18,9 +18,9 @@ Run the project with: python main.py
 
 ### Documentation
 The project uses python to allow the user to enter configuration for virtual machines. 
-User input will be validated.
-The project will also use a Bash script to automate service setup.
-Logging and error handeling will be used in the code and script.
+  User input will be validated.
+  The project will also use a Bash script to automate service setup.
+  Logging and error handeling will be used in the code and script.
 
 **Project structure:**
 configs folder - holds configuration files.
