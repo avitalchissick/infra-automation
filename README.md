@@ -37,9 +37,7 @@ Key features include:
 
 **Sorce Code**
 * `src/` - Stores python code files.  
-* `main.py` - Entry point for the project.  
-Prompting the user for machines configuration.  
-Configuration will be saved to configs\instance.json.  
+* `main.py` - Entry point for the project. Prompting the user for machines configuration. Configuration will be saved to configs\instance.json.  
 * `logger.py` -  Configures and manages logging.  
 * `Machine.py` - Defines a class representing a machine configuration.  
 * `OperatingSystem.py` - Enum class listing available operating systems for the virtual machines.  
