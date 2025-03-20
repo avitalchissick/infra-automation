@@ -1,8 +1,16 @@
 ## DevOps Infrastructure Provisioning & Configuration Automation Project
-
 [GitHub repository](https://github.com/avitalchissick/infra-automation)
 
-# Project phases
+### Instalation
+git clone https://github.com/avitalchissick/infra-automation.git
+cd infra-automation
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+pip install -r requirements.txt
+
+Run the project with: python main.py
+
+### Project phases
 Phase 1 - build a skeleton of an infrastructure provisioning tool using mockup to simulate automation.
 
 The project uses python to allow the user to enter configuration for virtual machines. 
