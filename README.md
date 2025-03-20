@@ -2,7 +2,7 @@
 
 [GitHub repository](https://github.com/avitalchissick/infra-automation)
 
-
+#Project phases
 Phase #1 - build a skeleton of an infrastructure provisioning tool using mockup to simulate automation.
 
 The project uses python to allow the user to enter configuration for virtual machines. 
