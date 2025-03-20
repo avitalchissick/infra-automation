@@ -1,8 +1,7 @@
-## DevOps Infrastructure Provisioning & Configuration Automation Project
+# DevOps Infrastructure Provisioning & Configuration Automation Project
 [GitHub repository](https://github.com/avitalchissick/infra-automation)
 
-
-### Setup
+## Setup Instructions
 ```
 git clone https://github.com/avitalchissick/infra-automation.git
 cd infra-automation
@@ -11,21 +10,24 @@ source venv/bin/activate  # On Windows use: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Run the project with: python main.py
+Run the project using `python main.py`
 
-### Project phases
-**Phase 1** - build a skeleton of an infrastructure provisioning tool using mockup to simulate automation.
+## Project phases
+**Phase 1** - Develop the foundational structure of an infrastructure provisioning tool, using mockup to simulate automation.
 
-### Documentation
+## Project Overview
 The project uses python to allow the user to enter configuration for virtual machines.  
-User input will be validated.  
-The project will also use a Bash script to automate service setup.  
-Logging and error handeling will be used in the code and script.  
+Key features include:  
+* User input validation.  
+* Bash scripting for automating service setup.  
+* Comprehensive logging and error handeling.  
 
-**Project structure:**
-configs folder - holds configuration files.  
-Phase 1 - files instances.json stores the list of machines configured by the user.  
+### Project structure:
+**configuration files**
+configs/ - holds configuration files.  
+configs/instances.json - stores the list of machines configured by the user.  
 
+**Logging*
 logs folder - holds log files.  
 provisioning.log - log of the provisioning process.  
 
