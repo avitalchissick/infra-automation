@@ -155,7 +155,7 @@ def get_user_machines():
     """
     Gets a list of machines from the user
     """
-    machines = {}
+    machines = []
     while True:
         try:
             yes_no_reply = (
@@ -171,13 +171,9 @@ def get_user_machines():
             if not user_machine:
                 continue  # Skip invalid machine configurations
 
-            if user_machine.name in machines:
-                logger.error("A machine named %s already exists.", user_machine.name)
-                continue
-
             if Machine.validate(user_machine):
                 logger.info("User added machine configuration: %s", user_machine)
-                machines[user_machine.name] = user_machine
+                machines.append(user_machine)
 
         except KeyboardInterrupt:
             logger.info("User exited machine configuration.")
@@ -185,14 +181,14 @@ def get_user_machines():
     return machines
 
 
-def save_machines(machines: dict):
+def save_machines(machines: list):
     """
     Save listed machines to the confiiguration file.
     """
     if not machines:
         logger.info("No machines were configured by the user")
 
-    data = [m.to_dict() for m in machines.values()]
+    data = [m.to_dict() for m in machines]
     CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
 
     with CONFIG_FILE.open("w") as f:
@@ -201,11 +197,11 @@ def save_machines(machines: dict):
     logger.info("Save %i machines to %s", len(machines), CONFIG_FILE.name)
 
 
-def create_machines(machines: dict):
+def create_machines(machines: list):
     """
     Creates listed machines.
     """
-    for m in machines.values():
+    for m in machines:
         logger.info("Creating machine: %s", m)
 
 
