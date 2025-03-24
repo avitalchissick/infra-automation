@@ -6,7 +6,7 @@
 git clone https://github.com/avitalchissick/infra-automation.git
 cd infra-automation
 python -m venv venv
-source venv/bin/activate  # On Windows use: venv\Scripts\activate
+source venv/bin/activate  # On Windows use: source venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
