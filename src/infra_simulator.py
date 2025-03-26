@@ -202,7 +202,14 @@ def create_machines(machines: list):
     Creates listed machines.
     """
     for m in machines:
-        logger.info("Creating machine: %s", m)
+        create_machine(m)
+
+
+def create_machine(machine: Machine):
+    try:
+        logger.info("Creating machine: %s", machine)
+    except Exception as ex:
+        logger.error("Failed to create machine %s. Error: %s", machine, ex)
 
 
 def run_setup_service_script(service_name):
