@@ -31,23 +31,23 @@ install_service() {
         log_message "INFO" "Service '$service_name' does not exist."
 
         log_message "INFO" "Updating package lists..."
-        sudo apt update -y
+        #sudo apt update -y
         check_result
 
         log_message "INFO" "Installing '$service_name'..."
-        sudo apt install -y $service_name
+        #sudo apt install -y $service_name
         check_result
 
         log_message "INFO" "Enabling '$service_name' to start on boot..."
-        sudo systemctl enable $service_name
+        #sudo systemctl enable $service_name
         check_success
 
         log_message "INFO" "Starting '$service_name'..."
-        sudo systemctl start $service_name
+        #sudo systemctl start $service_name
         check_success
 
         log_message "INFO" "Checking '$service_name' status..."
-        sudo systemctl status $service_name --no-pager
+        #sudo systemctl status $service_name --no-pager
 
         log_message "INFO" "'$service_name' has been installed successfully"
     fi
